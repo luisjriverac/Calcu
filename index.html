@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Envios - Rivera</title>
+    <style>
+        body { 
+            font-family: sans-serif; 
+            background-color: #f0f2f5; 
+            padding: 15px 8px 300px 8px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 10px; 
+            margin: 0; 
+        }
+        .main-title { text-align: center; color: #1e3a8a; margin: 5px 0 2px 0; font-size: 22px; font-weight: bold; }
+        .subtitle { text-align: center; color: #64748b; margin: 0 0 5px 0; font-size: 12px; }
+        .card { background: white; padding: 12px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); width: 100%; max-width: 400px; box-sizing: border-box; }
+        h2 { text-align: center; margin: 0 0 6px 0; font-size: 16px; color: #1a1a1a; }
+        .tasa-badge { text-align: center; background-color: #f1f5f9; padding: 6px; border-radius: 6px; font-size: 12px; color: #334155; font-weight: bold; border: 1px solid #e2e8f0; margin-bottom: 8px; }
+        .tasa-badge strong { color: #1e3a8a; }
+        label { display: block; margin-bottom: 4px; font-weight: bold; color: #475569; font-size: 12px; }
+        .input-box { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-size: 18px; font-weight: bold; text-align: right; color: #1e3a8a; }
+        
+        .results-box { display: none; background-color: #f8fafc; border-left: 4px solid #1e3a8a; padding: 8px 10px; border-radius: 4px; margin-top: 8px; }
+        .result-line { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 13px; color: #334155; }
+        .highlight-line { background-color: #f0fdf4; padding: 4px 6px; border-radius: 4px; font-weight: bold; color: #16a34a; }
+        .total-line { font-weight: bold; font-size: 15px; color: #1e3a8a; padding-top: 2px; }
+        
+        .btn-clear { background-color: #ef4444; color: white; border: none; border-radius: 4px; padding: 6px; width: 100%; font-size: 11px; font-weight: bold; margin-top: 8px; cursor: pointer; }
+        .btn-clear:active { background-color: #dc2626; }
+
+        /* Bloque Dólar */
+        .dolar-card { text-align: center; background: #ffffff; border: 2px solid #2563eb; }
+        .dolar-precio { font-size: 26px; font-weight: bold; color: #1e3a8a; margin: 5px 0; }
+    </style>
+</head>
+<body>
+
+<div>
+    <h1 class="main-title">Transferencias Rivera</h1>
+    <p class="subtitle">Calculadora Rápida para Clientes</p>
+</div>
+
+<!-- BLOQUE 1: BRASIL A VENEZUELA -->
+<div class="card">
+    <h2>🇧🇷 ➔ 🇻🇪 Brasil a Venezuela</h2>
+    <div class="tasa-badge" id="badgeBR">Cargando tasa...</div>
+    <label>Tú envías (Reales - BRL):</label>
+    <input type="text" id="amountBR" class="input-box" placeholder="0,00" inputmode="numeric" onfocus="verCompleto(this)" oninput="aplicarMascaraBancaria(this); calcularBR()">
+    
+    <div class="results-box" id="boxBR">
+        <div class="result-line total-line"><span>Recibe:</span> <span id="resTotalBR">0,00 VES</span></div>
+        <div class="result-line highlight-line"><span>En Dólares:</span> <span id="resUsdBR">0,00 USD</span></div>
+        <button class="btn-clear" onclick="limpiarBloque('amountBR', 'boxBR')">🗑️ Borrar</button>
+    </div>
+</div>
+
+<!-- BLOQUE 2: VENEZUELA A BRASIL -->
+<div class="card">
+    <h2>🇻🇪 ➔ 🇧🇷 Venezuela a Brasil</h2>
+    <div class="tasa-badge" id="badgeVE">Cargando tasa...</div>
+    <label>Tú envías (Bolívares - VES):</label>
+    <input type="text" id="amountVE" class="input-box" placeholder="0,00" inputmode="numeric" onfocus="verCompleto(this)" oninput="aplicarMascaraBancaria(this); calcularVE()">
+    
+    <div class="results-box" id="boxVE">
+        <div class="result-line total-line"><span>Recibe:</span> <span id="resTotalBRL">0,00 BRL</span></div>
+        <div class="result-line highlight-line"><span>Equivalente en Dólares:</span> <span id="resUsdVE">0,00 USD</span></div>
+        <button class="btn-clear" onclick="limpiarBloque('amountVE', 'boxVE')">🗑️ Borrar</button>
+    </div>
+</div>
+
+<!-- BLOQUE 3: PRECIO DEL DÓLAR -->
+<div class="card dolar-card">
+    <h2>🇺🇸 Precio del Dólar</h2>
+    <p style="margin: 0; font-size: 11px; color: #64748b;">Tasa de referencia oficial</p>
+    <div class="dolar-precio" id="displayDolar">0,00 VES</div>
+</div>
+
+<script>
+// Valores por defecto si no hay datos guardados previamente
+let valoresPorDefecto = { BR_VE_BRL: 157.00, VE_BR_BRL: 190.00, USD_VE_VES: 742.23 };
+let datosRutas = JSON.parse(localStorage.getItem('tasasRivera')) || valoresPorDefecto;
+
+function limpiarBloque(idInput, idBox) {
+    document.getElementById(idInput).value = "";
+    document.getElementById(idBox).style.display = "none";
+}
+
+function verCompleto(input) {
+    setTimeout(() => {
+        const tarjeta = input.closest('.card');
+        if (tarjeta) {
+            tarjeta.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+    }, 350);
+}
+
+function aplicarMascaraBancaria(input) {
+    let valor = input.value.replace(/\D/g, "");
+    if (valor === "") {
+        input.value = "";
+        return;
+    }
+    
+    let numero = (parseInt(valor, 10) / 100).toFixed(2);
+    let partes = numero.split(".");
+    
+    partes[0] = partes[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    input.value = partes.join(",");
+}
+
+function obtenerNumeroValido(id) {
+    let valor = document.getElementById(id).value;
+    if (!valor) return 0;
+    
+    valor = valor.replace(/\./g, '').replace(/,/g, '.');
+    const num = parseFloat(valor);
+    return isNaN(num) ? 0 : num;
+}
+
+function formato(n) {
+    return n.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function calcularBR() {
+    const amount = obtenerNumeroValido('amountBR');
+    const box = document.getElementById('boxBR');
+    
+    if (amount <= 0) {
+        box.style.display = 'none';
+        return;
+    }
+    
+    box.style.display = 'block';
+    const totalVes = amount * datosRutas.BR_VE_BRL;
+    const totalUsd = datosRutas.USD_VE_VES > 0 ? totalVes / datosRutas.USD_VE_VES : 0;
+    
+    document.getElementById('resTotalBR').innerText = formato(totalVes) + " VES";
+    document.getElementById('resUsdBR').innerText = formato(totalUsd) + " USD";
+    
+    verCompleto(document.getElementById('amountBR'));
+}
+
+function calcularVE() {
+    const amount = obtenerNumeroValido('amountVE');
+    const box = document.getElementById('boxVE');
+    
+    if (amount <= 0) {
+        box.style.display = 'none';
+        return;
+    }
+    
+    box.style.display = 'block';
+    const totalBrl = datosRutas.VE_BR_BRL > 0 ? amount / datosRutas.VE_BR_BRL : 0;
+    const totalUsd = datosRutas.USD_VE_VES > 0 ? amount / datosRutas.USD_VE_VES : 0;
+    
+    document.getElementById('resTotalBRL').innerText = formato(totalBrl) + " BRL";
+    document.getElementById('resUsdVE').innerText = formato(totalUsd) + " USD";
+    
+    verCompleto(document.getElementById('amountVE'));
+}
+
+function cargarTasas() {
+    document.getElementById('badgeBR').innerHTML = `Tasa: 1 BRL = <strong>${datosRutas.BR_VE_BRL.toFixed(2)} VES</strong>`;
+    document.getElementById('badgeVE').innerHTML = `Tasa: <strong>${datosRutas.VE_BR_BRL.toFixed(2)} VES</strong> = 1 BRL`;
+    document.getElementById('displayDolar').innerText = `1 USD = ${formato(datosRutas.USD_VE_VES)} VES`;
+}
+
+window.onload = cargarTasas;
+</script>
+</body>
+</html>
