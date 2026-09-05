@@ -164,10 +164,10 @@ function calcularVE() {
     verCompleto(document.getElementById('amountVE'));
 }
 
-// Cargar las tasas automáticamente desde el archivo tasas.json de GitHub
+// Cargar las tasas asegurando que GitHub entregue la versión fresca sin caché
 async function cargarTasas() {
     try {
-        const respuesta = await fetch('tasas.json?t=' + new Date().getTime());
+        const respuesta = await fetch('tasas.json?v=' + new Date().getTime());
         if (respuesta.ok) {
             datosRutas = await respuesta.json();
         }
