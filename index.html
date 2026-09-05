@@ -21,8 +21,8 @@
         h2 { text-align: center; margin: 0 0 6px 0; font-size: 16px; color: #1a1a1a; }
         
         /* Tasa grande y destacada */
-        .tasa-badge { text-align: center; background-color: #f8fafc; padding: 10px; border-radius: 8px; font-size: 14px; color: #334155; border: 2px solid #cbd5e1; margin-bottom: 10px; }
-        .tasa-badge .tasa-numero { font-size: 22px; font-weight: bold; color: #1e3a8a; display: block; margin-top: 2px; }
+        .tasa-badge { text-align: center; background-color: #f8fafc; padding: 10px; border-radius: 8px; font-size: 13px; color: #64748b; border: 2px solid #cbd5e1; margin-bottom: 10px; }
+        .tasa-numero { font-size: 24px; font-weight: bold; color: #1e3a8a; display: block; margin-top: 2px; }
         
         label { display: block; margin-bottom: 4px; font-weight: bold; color: #475569; font-size: 12px; }
         .input-box { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-size: 18px; font-weight: bold; text-align: right; color: #1e3a8a; }
@@ -167,8 +167,8 @@ function calcularVE() {
 }
 
 function cargarTasas() {
-    document.getElementById('badgeBR').innerHTML = `Tasa: <span class="tasa-numero">1 BRL = ${datosRutas.BR_VE_BRL.toFixed(2)} VES</span>`;
-    document.getElementById('badgeVE').innerHTML = `Tasa: <span class="tasa-numero">${datosRutas.VE_BR_BRL.toFixed(2)} VES = 1 BRL</span>`;
+    document.getElementById('badgeBR').innerHTML = `Tasa <span class="tasa-numero">${datosRutas.BR_VE_BRL.toFixed(2)}</span>`;
+    document.getElementById('badgeVE').innerHTML = `Tasa <span class="tasa-numero">${datosRutas.VE_BR_BRL.toFixed(2)}</span>`;
     document.getElementById('displayDolar').innerText = `1 USD = ${formato(datosRutas.USD_VE_VES)} VES`;
 }
 
