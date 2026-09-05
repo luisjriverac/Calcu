@@ -167,8 +167,9 @@ function calcularVE() {
 }
 
 function cargarTasas() {
-    document.getElementById('badgeBR').innerHTML = `Tasa <span class="tasa-numero">${datosRutas.BR_VE_BRL.toFixed(2)}</span>`;
-    document.getElementById('badgeVE').innerHTML = `Tasa <span class="tasa-numero">${datosRutas.VE_BR_BRL.toFixed(2)}</span>`;
+    // Math.trunc redondea hacia abajo quitando los decimales en la visualización de la tasa
+    document.getElementById('badgeBR').innerHTML = `Tasa <span class="tasa-numero">${Math.trunc(datosRutas.BR_VE_BRL)}</span>`;
+    document.getElementById('badgeVE').innerHTML = `Tasa <span class="tasa-numero">${Math.trunc(datosRutas.VE_BR_BRL)}</span>`;
     document.getElementById('displayDolar').innerText = `1 USD = ${formato(datosRutas.USD_VE_VES)} VES`;
 }
 
