@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administración - Tasas</title>
     <style>
-        body { font-family: sans-serif; background-color: #f0f2f5; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        body { font-family: sans-serif; background-color: #f0f2f5; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; margin: 0; }
         .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 100%; max-width: 400px; box-sizing: border-box; }
         h1 { text-align: center; color: #1e3a8a; font-size: 20px; margin-bottom: 20px; }
         .form-group { margin-bottom: 15px; }
@@ -16,12 +16,29 @@
         .output-box { margin-top: 20px; background: #f8fafc; border: 1px dashed #cbd5e1; padding: 10px; border-radius: 6px; display: none; }
         textarea { width: 100%; height: 80px; font-family: monospace; font-size: 13px; padding: 5px; box-sizing: border-box; resize: none; }
         .msg { color: #16a34a; font-weight: bold; text-align: center; margin-top: 10px; display: none; }
+        
+        /* Pantalla de bloqueo por contraseña */
+        #loginScreen { display: block; }
+        #adminPanel { display: none; }
+        .error-msg { color: #dc2626; font-size: 12px; text-align: center; margin-top: 8px; display: none; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h1>Administración Tasas</h1>
+<!-- PANTALLA DE ACCESO CON CONTRASEÑA -->
+<div class="card" id="loginScreen">
+    <h1>Acceso Administrador</h1>
+    <div class="form-group">
+        <label>Ingrese la contraseña:</label>
+        <input type="password" id="inputPass" placeholder="••••••" onkeydown="if(event.key === 'Enter') verificarClave()">
+    </div>
+    <button class="btn" onclick="verificarClave()">Entrar</button>
+    <div class="error-msg" id="errorPass">Contraseña incorrecta</div>
+</div>
+
+<!-- PANEL DE ADMINISTRACIÓN DE TASAS -->
+<div class="card" id="adminPanel">
+    <h1>Administración - Tasas</h1>
     
     <div class="form-group">
         <label>Tasa Brasil ➔ Venezuela (BR_VE_BRL):</label>
@@ -48,6 +65,18 @@
 </div>
 
 <script>
+function verificarClave() {
+    const claveIngresada = document.getElementById('inputPass').value;
+    if (claveIngresada === "6453*") {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        cargarAdmin();
+    } else {
+        document.getElementById('errorPass').style.display = 'block';
+        document.getElementById('inputPass').value = '';
+    }
+}
+
 async function cargarAdmin() {
     try {
         const respuesta = await fetch('tasas.json?t=' + new Date().getTime());
@@ -83,8 +112,6 @@ function generarCambios() {
         document.getElementById('msgOk').style.display = 'none';
     }, 4000);
 }
-
-window.onload = cargarAdmin;
 </script>
 
 </body>
