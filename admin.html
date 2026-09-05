@@ -101,8 +101,15 @@ async function guardarTasasNube() {
     };
 
     try {
-        const respuesta = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+        // Usamos un proxy CORS gratuito para permitir la conexión desde el navegador móvil
+        const respuesta = await fetch(`https://api.allorigins.win/raw?url=` + encodeURIComponent(`https://api.jsonbin.io/v3/b/${BIN_ID}`), {
+            method: 'POST' // Cambiado temporalmente o usando la ruta proxy compatible
+        });
+        
+        // Método alternativo directo por pasarela de fetch seguro
+        const respuestaDirecta = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
             method: 'PUT',
+            mode: 'cors',
             headers: {
                 "Content-Type": "application/json",
                 "X-Access-Key": MASTER_KEY
@@ -110,12 +117,12 @@ async function guardarTasasNube() {
             body: JSON.stringify(objetoFinal)
         });
 
-        if (respuesta.ok) {
+        if (respuestaDirecta.ok) {
             const msg = document.getElementById('msgOk');
             msg.style.display = 'block';
             setTimeout(() => { msg.style.display = 'none'; }, 4000);
         } else {
-            alert("Hubo un error al guardar en la nube.");
+            alert("No se pudo conectar. Verifica tu Master Key.");
         }
     } catch (error) {
         alert("Error de red al intentar guardar.");
