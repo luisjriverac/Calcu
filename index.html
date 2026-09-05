@@ -20,7 +20,6 @@
         .card { background: white; padding: 12px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); width: 100%; max-width: 400px; box-sizing: border-box; }
         h2 { text-align: center; margin: 0 0 6px 0; font-size: 16px; color: #1a1a1a; }
         
-        /* Tasa grande y destacada */
         .tasa-badge { text-align: center; background-color: #f8fafc; padding: 10px; border-radius: 8px; font-size: 13px; color: #64748b; border: 2px solid #cbd5e1; margin-bottom: 10px; }
         .tasa-numero { font-size: 24px; font-weight: bold; color: #1e3a8a; display: block; margin-top: 2px; }
         
@@ -35,7 +34,6 @@
         .btn-clear { background-color: #ef4444; color: white; border: none; border-radius: 4px; padding: 6px; width: 100%; font-size: 11px; font-weight: bold; margin-top: 8px; cursor: pointer; }
         .btn-clear:active { background-color: #dc2626; }
 
-        /* Bloque Dólar */
         .dolar-card { text-align: center; background: #ffffff; border: 2px solid #2563eb; }
         .dolar-precio { font-size: 26px; font-weight: bold; color: #1e3a8a; margin: 5px 0; }
     </style>
@@ -83,6 +81,7 @@
 </div>
 
 <script>
+const BIN_ID = "6a9c98f6f5f4af5e296f8dc1";
 let datosRutas = { BR_VE_BRL: 0, VE_BR_BRL: 0, USD_VE_VES: 0 };
 
 function limpiarBloque(idInput, idBox) {
@@ -105,10 +104,8 @@ function aplicarMascaraBancaria(input) {
         input.value = "";
         return;
     }
-    
     let numero = (parseInt(valor, 10) / 100).toFixed(2);
     let partes = numero.split(".");
-    
     partes[0] = partes[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     input.value = partes.join(",");
 }
@@ -116,7 +113,6 @@ function aplicarMascaraBancaria(input) {
 function obtenerNumeroValido(id) {
     let valor = document.getElementById(id).value;
     if (!valor) return 0;
-    
     valor = valor.replace(/\./g, '').replace(/,/g, '.');
     const num = parseFloat(valor);
     return isNaN(num) ? 0 : num;
@@ -129,50 +125,38 @@ function formato(n) {
 function calcularBR() {
     const amount = obtenerNumeroValido('amountBR');
     const box = document.getElementById('boxBR');
-    
-    if (amount <= 0) {
-        box.style.display = 'none';
-        return;
-    }
-    
+    if (amount <= 0) { box.style.display = 'none'; return; }
     box.style.display = 'block';
     const totalVes = amount * datosRutas.BR_VE_BRL;
     const totalUsd = datosRutas.USD_VE_VES > 0 ? totalVes / datosRutas.USD_VE_VES : 0;
-    
     document.getElementById('resTotalBR').innerText = formato(totalVes) + " VES";
     document.getElementById('resUsdBR').innerText = formato(totalUsd) + " USD";
-    
     verCompleto(document.getElementById('amountBR'));
 }
 
 function calcularVE() {
     const amount = obtenerNumeroValido('amountVE');
     const box = document.getElementById('boxVE');
-    
-    if (amount <= 0) {
-        box.style.display = 'none';
-        return;
-    }
-    
+    if (amount <= 0) { box.style.display = 'none'; return; }
     box.style.display = 'block';
     const totalBrl = datosRutas.VE_BR_BRL > 0 ? amount / datosRutas.VE_BR_BRL : 0;
     const totalUsd = datosRutas.USD_VE_VES > 0 ? amount / datosRutas.USD_VE_VES : 0;
-    
     document.getElementById('resTotalBRL').innerText = formato(totalBrl) + " BRL";
     document.getElementById('resUsdVE').innerText = formato(totalUsd) + " USD";
-    
     verCompleto(document.getElementById('amountVE'));
 }
 
-// Cargar las tasas asegurando que GitHub entregue la versión fresca sin caché
 async function cargarTasas() {
     try {
-        const respuesta = await fetch('tasas.json?v=' + new Date().getTime());
+        const respuesta = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest?t=` + new Date().getTime(), {
+            headers: { "X-Access-Key": "$2a$10$tykasIsXRAOo/fijkrcce.qs3HoAVhWopI/v985j3yEO5Tb8n2dRm" }
+        });
         if (respuesta.ok) {
-            datosRutas = await respuesta.json();
+            const resultado = await respuesta.json();
+            datosRutas = resultado.record;
         }
     } catch (error) {
-        console.log("Usando valores por defecto");
+        console.log("Error cargando tasas");
     }
 
     document.getElementById('badgeBR').innerHTML = `Tasa <span class="tasa-numero">${Math.trunc(datosRutas.BR_VE_BRL || 0)}</span>`;
