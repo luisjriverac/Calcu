@@ -83,9 +83,7 @@
 </div>
 
 <script>
-// Valores por defecto si no hay datos guardados previamente
-let valoresPorDefecto = { BR_VE_BRL: 157.00, VE_BR_BRL: 190.00, USD_VE_VES: 742.23 };
-let datosRutas = JSON.parse(localStorage.getItem('tasasRivera')) || valoresPorDefecto;
+let datosRutas = { BR_VE_BRL: 0, VE_BR_BRL: 0, USD_VE_VES: 0 };
 
 function limpiarBloque(idInput, idBox) {
     document.getElementById(idInput).value = "";
@@ -166,11 +164,20 @@ function calcularVE() {
     verCompleto(document.getElementById('amountVE'));
 }
 
-function cargarTasas() {
-    // Math.trunc redondea hacia abajo quitando los decimales en la visualización de la tasa
-    document.getElementById('badgeBR').innerHTML = `Tasa <span class="tasa-numero">${Math.trunc(datosRutas.BR_VE_BRL)}</span>`;
-    document.getElementById('badgeVE').innerHTML = `Tasa <span class="tasa-numero">${Math.trunc(datosRutas.VE_BR_BRL)}</span>`;
-    document.getElementById('displayDolar').innerText = `1 USD = ${formato(datosRutas.USD_VE_VES)} VES`;
+// Cargar las tasas automáticamente desde el archivo tasas.json de GitHub
+async function cargarTasas() {
+    try {
+        const respuesta = await fetch('tasas.json?t=' + new Date().getTime());
+        if (respuesta.ok) {
+            datosRutas = await respuesta.json();
+        }
+    } catch (error) {
+        console.log("Usando valores por defecto");
+    }
+
+    document.getElementById('badgeBR').innerHTML = `Tasa <span class="tasa-numero">${Math.trunc(datosRutas.BR_VE_BRL || 0)}</span>`;
+    document.getElementById('badgeVE').innerHTML = `Tasa <span class="tasa-numero">${Math.trunc(datosRutas.VE_BR_BRL || 0)}</span>`;
+    document.getElementById('displayDolar').innerText = `1 USD = ${formato(datosRutas.USD_VE_VES || 0)} VES`;
 }
 
 window.onload = cargarTasas;
