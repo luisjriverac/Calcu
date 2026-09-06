@@ -81,7 +81,7 @@
 </div>
 
 <script>
-const BIN_ID = "6a9c98f6f5f4af5e296f8dc1";
+const NPOINT_ID = "0ea603d34d229220c52f";
 let datosRutas = { BR_VE_BRL: 0, VE_BR_BRL: 0, USD_VE_VES: 0 };
 
 function limpiarBloque(idInput, idBox) {
@@ -148,12 +148,9 @@ function calcularVE() {
 
 async function cargarTasas() {
     try {
-        const respuesta = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest?t=` + new Date().getTime(), {
-            headers: { "X-Master-Key": "$2a$10$lfzlJ20uDHSrSx2a7P7n5ecXs1iAPQASd/Q4waPVWoECgrBINDCr." }
-        });
+        const respuesta = await fetch(`https://api.npoint.io/${NPOINT_ID}?t=` + new Date().getTime());
         if (respuesta.ok) {
-            const resultado = await respuesta.json();
-            datosRutas = resultado.record;
+            datosRutas = await respuesta.json();
         }
     } catch (error) {
         console.log("Error cargando tasas");
