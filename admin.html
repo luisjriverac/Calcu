@@ -101,11 +101,13 @@ async function guardarTasasNube() {
     };
 
     try {
-        const respuesta = await fetch(`https://corsproxy.io/?` + encodeURIComponent(`https://api.jsonbin.io/v3/b/${BIN_ID}`), {
+        // Petición directa optimizada sin proxies externos lentos
+        const respuesta = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
             method: 'PUT',
             headers: {
                 "Content-Type": "application/json",
-                "X-Master-Key": MASTER_KEY
+                "X-Master-Key": MASTER_KEY,
+                "X-Bin-Versioning": "false"
             },
             body: JSON.stringify(objetoFinal)
         });
@@ -115,10 +117,10 @@ async function guardarTasasNube() {
             msg.style.display = 'block';
             setTimeout(() => { msg.style.display = 'none'; }, 4000);
         } else {
-            alert("Error al guardar en la nube.");
+            alert("No se pudo guardar. Intenta recargar la página.");
         }
     } catch (error) {
-        alert("Error de red al intentar conectar.");
+        alert("Error de conexión con el servidor.");
     }
 }
 </script>
