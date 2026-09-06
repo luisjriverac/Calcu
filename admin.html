@@ -57,8 +57,7 @@
 </div>
 
 <script>
-const BIN_ID = "6a9c98f6f5f4af5e296f8dc1";
-const MASTER_KEY = "$2a$10$lfzlJ20uDHSrSx2a7P7n5ecXs1iAPQASd/Q4waPVWoECgrBINDCr.";
+const NPOINT_ID = "0ea603d34d229220c52f";
 
 function verificarClave() {
     const claveIngresada = document.getElementById('inputPass').value;
@@ -74,12 +73,9 @@ function verificarClave() {
 
 async function cargarAdmin() {
     try {
-        const respuesta = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest?t=` + new Date().getTime(), {
-            headers: { "X-Master-Key": MASTER_KEY }
-        });
+        const respuesta = await fetch(`https://api.npoint.io/${NPOINT_ID}?t=` + new Date().getTime());
         if (respuesta.ok) {
-            const data = await respuesta.json();
-            const tasas = data.record;
+            const tasas = await respuesta.json();
             document.getElementById('adminBR').value = tasas.BR_VE_BRL || 0;
             document.getElementById('adminVE').value = tasas.VE_BR_BRL || 0;
             document.getElementById('adminDolar').value = tasas.USD_VE_VES || 0;
@@ -101,13 +97,10 @@ async function guardarTasasNube() {
     };
 
     try {
-        // Petición directa optimizada sin proxies externos lentos
-        const respuesta = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-            method: 'PUT',
+        const respuesta = await fetch(`https://api.npoint.io/${NPOINT_ID}`, {
+            method: 'POST',
             headers: {
-                "Content-Type": "application/json",
-                "X-Master-Key": MASTER_KEY,
-                "X-Bin-Versioning": "false"
+                "Content-Type": "application/json"
             },
             body: JSON.stringify(objetoFinal)
         });
@@ -117,10 +110,10 @@ async function guardarTasasNube() {
             msg.style.display = 'block';
             setTimeout(() => { msg.style.display = 'none'; }, 4000);
         } else {
-            alert("No se pudo guardar. Intenta recargar la página.");
+            alert("Error al guardar en la nube.");
         }
     } catch (error) {
-        alert("Error de conexión con el servidor.");
+        alert("Error de red al intentar conectar.");
     }
 }
 </script>
