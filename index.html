@@ -149,7 +149,7 @@ function calcularVE() {
 async function cargarTasas() {
     try {
         const respuesta = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest?t=` + new Date().getTime(), {
-            headers: { "X-Access-Key": "$2a$10$tykasIsXRAOo/fijkrcce.qs3HoAVhWopI/v985j3yEO5Tb8n2dRm" }
+            headers: { "X-Master-Key": "$2a$10$lfzlJ20uDHSrSx2a7P7n5ecXs1iAPQASd/Q4waPVWoECgrBINDCr." }
         });
         if (respuesta.ok) {
             const resultado = await respuesta.json();
