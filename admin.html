@@ -75,7 +75,7 @@ function verificarClave() {
 async function cargarAdmin() {
     try {
         const respuesta = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest?t=` + new Date().getTime(), {
-            headers: { "X-Access-Key": MASTER_KEY }
+            headers: { "X-Master-Key": MASTER_KEY }
         });
         if (respuesta.ok) {
             const data = await respuesta.json();
@@ -101,31 +101,24 @@ async function guardarTasasNube() {
     };
 
     try {
-        // Usamos un proxy CORS gratuito para permitir la conexión desde el navegador móvil
-        const respuesta = await fetch(`https://api.allorigins.win/raw?url=` + encodeURIComponent(`https://api.jsonbin.io/v3/b/${BIN_ID}`), {
-            method: 'POST' // Cambiado temporalmente o usando la ruta proxy compatible
-        });
-        
-        // Método alternativo directo por pasarela de fetch seguro
-        const respuestaDirecta = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+        const respuesta = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
             method: 'PUT',
-            mode: 'cors',
             headers: {
                 "Content-Type": "application/json",
-                "X-Access-Key": MASTER_KEY
+                "X-Master-Key": MASTER_KEY
             },
             body: JSON.stringify(objetoFinal)
         });
 
-        if (respuestaDirecta.ok) {
+        if (respuesta.ok) {
             const msg = document.getElementById('msgOk');
             msg.style.display = 'block';
             setTimeout(() => { msg.style.display = 'none'; }, 4000);
         } else {
-            alert("No se pudo conectar. Verifica tu Master Key.");
+            alert("Error al guardar. Revisa que tu Master Key tenga permisos completos en JSONBin.");
         }
     } catch (error) {
-        alert("Error de red al intentar guardar.");
+        alert("Error de red al intentar conectar con JSONBin.");
     }
 }
 </script>
