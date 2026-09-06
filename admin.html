@@ -58,7 +58,7 @@
 
 <script>
 const BIN_ID = "6a9c98f6f5f4af5e296f8dc1";
-const MASTER_KEY = "$2a$10$tykasIsXRAOo/fijkrcce.qs3HoAVhWopI/v985j3yEO5Tb8n2dRm";
+const MASTER_KEY = "$2a$10$lfzlJ20uDHSrSx2a7P7n5ecXs1iAPQASd/Q4waPVWoECgrBINDCr.";
 
 function verificarClave() {
     const claveIngresada = document.getElementById('inputPass').value;
@@ -101,7 +101,7 @@ async function guardarTasasNube() {
     };
 
     try {
-        const respuesta = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+        const respuesta = await fetch(`https://corsproxy.io/?` + encodeURIComponent(`https://api.jsonbin.io/v3/b/${BIN_ID}`), {
             method: 'PUT',
             headers: {
                 "Content-Type": "application/json",
@@ -115,10 +115,10 @@ async function guardarTasasNube() {
             msg.style.display = 'block';
             setTimeout(() => { msg.style.display = 'none'; }, 4000);
         } else {
-            alert("Error al guardar. Revisa que tu Master Key tenga permisos completos en JSONBin.");
+            alert("Error al guardar en la nube.");
         }
     } catch (error) {
-        alert("Error de red al intentar conectar con JSONBin.");
+        alert("Error de red al intentar conectar.");
     }
 }
 </script>
