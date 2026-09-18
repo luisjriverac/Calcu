@@ -17,7 +17,6 @@
 </head>
 <body>
 
-<!-- CAJA DE ACCESO -->
 <div class="card" id="loginBox">
     <h2>🔒 Acceso Administrador</h2>
     <label>Ingrese Clave:</label>
@@ -26,10 +25,8 @@
     <div class="error" id="errorMsg"></div>
 </div>
 
-<!-- PANEL DE CAMBIO DE TASAS -->
 <div class="card" id="adminPanel" style="display: none;">
     <h2>⚙️ Actualizar Tasas</h2>
-    
     <label>Tasa Brasil ➔ Venezuela (1 BRL):</label>
     <input type="number" step="0.01" id="tasaBR">
 
@@ -39,42 +36,81 @@
     <label>Precio Dólar (1 USD en VES):</label>
     <input type="number" step="0.01" id="tasaDolar">
 
-    <button onclick="guardarTasas()">Guardar Cambios</button>
+    <button onclick="guardarEnGitHub()">Guardar Cambios</button>
 </div>
 
 <script>
 const CLAVE_SECRETA = "6453*";
+
+const GITHUB_USER = "luisjriverac";
+const REPO_NAME = "Calcu";
+const GITHUB_TOKEN = "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";
+
+let fileSha = "";
 
 function verificarClave() {
     const input = document.getElementById('claveInput').value;
     if (input === CLAVE_SECRETA) {
         document.getElementById('loginBox').style.display = 'none';
         document.getElementById('adminPanel').style.display = 'block';
-        cargarInputs();
+        cargarTasasActuales();
     } else {
         document.getElementById('errorMsg').innerText = "Clave incorrecta";
     }
 }
 
-function cargarInputs() {
-    let valoresPorDefecto = { BR_VE_BRL: 157.00, VE_BR_BRL: 190.00, USD_VE_VES: 742.23 };
-    let datosRutas = JSON.parse(localStorage.getItem('tasasRivera')) || valoresPorDefecto;
+async function cargarTasasActuales() {
+    try {
+        let respuesta = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${REPO_NAME}/contents/tasas.json`, {
+            headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+        });
+        let resultado = await respuesta.json();
+        
+        fileSha = resultado.sha;
+        let contenidoDecodificado = JSON.parse(atob(resultado.content));
 
-    document.getElementById('tasaBR').value = datosRutas.BR_VE_BRL;
-    document.getElementById('tasaVE').value = datosRutas.VE_BR_BRL;
-    document.getElementById('tasaDolar').value = datosRutas.USD_VE_VES;
+        document.getElementById('tasaBR').value = contenidoDecodificado.BR_VE_BRL;
+        document.getElementById('tasaVE').value = contenidoDecodificado.VE_BR_BRL;
+        document.getElementById('tasaDolar').value = contenidoDecodificado.USD_VE_VES;
+    } catch (e) {
+        alert("Error al conectar con GitHub para leer las tasas.");
+    }
 }
 
-function guardarTasas() {
+async function guardarEnGitHub() {
     let nuevasTasas = {
         BR_VE_BRL: parseFloat(document.getElementById('tasaBR').value) || 0,
         VE_BR_BRL: parseFloat(document.getElementById('tasaVE').value) || 0,
         USD_VE_VES: parseFloat(document.getElementById('tasaDolar').value) || 0
     };
 
-    // Guarda localmente sin requerir red ni servidores externos
-    localStorage.setItem('tasasRivera', JSON.stringify(nuevasTasas));
-    alert("¡Tasas actualizadas con éxito!");
+    let contenidoJson = JSON.stringify(nuevasTasas, null, 2);
+    let contenidoBase64 = btoa(unescape(encodeURIComponent(contenidoJson)));
+
+    try {
+        let respuesta = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${REPO_NAME}/contents/tasas.json`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `token ${GITHUB_TOKEN}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: "Actualización de tasas desde panel admin",
+                content: contenidoBase64,
+                sha: fileSha
+            })
+        });
+
+        if (respuesta.ok) {
+            let resultado = await respuesta.json();
+            fileSha = resultado.content.sha;
+            alert("¡Tasas actualizadas y guardadas permanentemente en GitHub!");
+        } else {
+            alert("Error al guardar en GitHub.");
+        }
+    } catch (e) {
+        alert("Error de red al intentar guardar.");
+    }
 }
 </script>
 </body>
