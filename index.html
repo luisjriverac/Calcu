@@ -72,7 +72,11 @@ async function cargarTasas() {
         document.getElementById('badgeVE').innerHTML = `Tasa: <strong>${datosRutas.VE_BR_BRL.toFixed(2)} VES</strong> = 1 BRL`;
         document.getElementById('displayDolar').innerText = `1 USD = ${formato(datosRutas.USD_VE_VES)} VES`;
     } catch (e) {
-        console.error("Error al cargar tasas");
+        // Valores por defecto si falla la lectura inicial
+        datosRutas = { BR_VE_BRL: 10, VE_BR_BRL: 10, USD_VE_VES: 36 };
+        document.getElementById('badgeBR').innerHTML = `Tasa: 1 BRL = <strong>10.00 VES</strong>`;
+        document.getElementById('badgeVE').innerHTML = `Tasa: <strong>10.00 VES</strong> = 1 BRL`;
+        document.getElementById('displayDolar').innerText = `1 USD = 36.00 VES`;
     }
 }
 
