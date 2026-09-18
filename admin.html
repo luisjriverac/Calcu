@@ -3,120 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administración - Tasas</title>
+    <title>Admin - Tasas Rivera</title>
     <style>
-        body { font-family: sans-serif; background-color: #f0f2f5; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; margin: 0; }
-        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 100%; max-width: 400px; box-sizing: border-box; }
-        h1 { text-align: center; color: #1e3a8a; font-size: 20px; margin-bottom: 20px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #475569; font-size: 14px; }
-        input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-size: 16px; font-weight: bold; }
-        .btn { background-color: #2563eb; color: white; border: none; border-radius: 6px; padding: 12px; width: 100%; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .btn:active { background-color: #1d4ed8; }
-        .msg { color: #16a34a; font-weight: bold; text-align: center; margin-top: 15px; display: none; font-size: 14px; }
-        
-        #loginScreen { display: block; }
-        #adminPanel { display: none; }
-        .error-msg { color: #dc2626; font-size: 12px; text-align: center; margin-top: 8px; display: none; }
+        body { font-family: system-ui, sans-serif; background-color: #0f172a; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: #1e293b; padding: 20px; border-radius: 12px; width: 100%; max-width: 350px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); box-sizing: border-box; }
+        h2 { text-align: center; margin-top: 0; color: #38bdf8; font-size: 18px; }
+        label { display: block; margin: 10px 0 4px; font-size: 13px; color: #94a3b8; }
+        input { width: 100%; padding: 10px; border: 1px solid #475569; background: #0f172a; color: white; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; background: #2563eb; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; margin-top: 15px; cursor: pointer; }
+        button:hover { background: #1d4ed8; }
+        .error { color: #f87171; font-size: 12px; text-align: center; margin-top: 8px; }
     </style>
 </head>
 <body>
 
-<!-- PANTALLA DE ACCESO CON CONTRASEÑA -->
-<div class="card" id="loginScreen">
-    <h1>Acceso Administrador</h1>
-    <div class="form-group">
-        <label>Ingrese la contraseña:</label>
-        <input type="password" id="inputPass" placeholder="••••••" onkeydown="if(event.key === 'Enter') verificarClave()">
-    </div>
-    <button class="btn" onclick="verificarClave()">Entrar</button>
-    <div class="error-msg" id="errorPass">Contraseña incorrecta</div>
+<!-- CAJA DE ACCESO -->
+<div class="card" id="loginBox">
+    <h2>🔒 Acceso Administrador</h2>
+    <label>Ingrese Clave:</label>
+    <input type="password" id="claveInput" placeholder="Clave secreta">
+    <button onclick="verificarClave()">Ingresar</button>
+    <div class="error" id="errorMsg"></div>
 </div>
 
-<!-- PANEL DE ADMINISTRACIÓN DE TASAS -->
-<div class="card" id="adminPanel">
-    <h1>Administración - Tasas</h1>
+<!-- PANEL DE CAMBIO DE TASAS -->
+<div class="card" id="adminPanel" style="display: none;">
+    <h2>⚙️ Actualizar Tasas</h2>
     
-    <div class="form-group">
-        <label>Tasa Brasil ➔ Venezuela (BR_VE_BRL):</label>
-        <input type="number" step="0.01" id="adminBR">
-    </div>
+    <label>Tasa Brasil ➔ Venezuela (1 BRL):</label>
+    <input type="number" step="0.01" id="tasaBR">
 
-    <div class="form-group">
-        <label>Tasa Venezuela ➔ Brasil (VE_BR_BRL):</label>
-        <input type="number" step="0.01" id="adminVE">
-    </div>
+    <label>Tasa Venezuela ➔ Brasil (VES por 1 BRL):</label>
+    <input type="number" step="0.01" id="tasaVE">
 
-    <div class="form-group">
-        <label>Precio del Dólar (USD_VE_VES):</label>
-        <input type="number" step="0.01" id="adminDolar">
-    </div>
+    <label>Precio Dólar (1 USD en VES):</label>
+    <input type="number" step="0.01" id="tasaDolar">
 
-    <button class="btn" onclick="guardarTasasNube()">Guardar Tasas en la Nube</button>
-    <div class="msg" id="msgOk">¡Tasas actualizadas en la nube con éxito!</div>
+    <button onclick="guardarTasas()">Guardar Cambios</button>
 </div>
 
 <script>
-const NPOINT_ID = "0ea603d34d229220c52f";
+const CLAVE_SECRETA = "6453*";
 
 function verificarClave() {
-    const claveIngresada = document.getElementById('inputPass').value;
-    if (claveIngresada === "6453*") {
-        document.getElementById('loginScreen').style.display = 'none';
+    const input = document.getElementById('claveInput').value;
+    if (input === CLAVE_SECRETA) {
+        document.getElementById('loginBox').style.display = 'none';
         document.getElementById('adminPanel').style.display = 'block';
-        cargarAdmin();
+        cargarInputs();
     } else {
-        document.getElementById('errorPass').style.display = 'block';
-        document.getElementById('inputPass').value = '';
+        document.getElementById('errorMsg').innerText = "Clave incorrecta";
     }
 }
 
-async function cargarAdmin() {
-    try {
-        const respuesta = await fetch(`https://api.npoint.io/${NPOINT_ID}?t=` + new Date().getTime());
-        if (respuesta.ok) {
-            const tasas = await respuesta.json();
-            document.getElementById('adminBR').value = tasas.BR_VE_BRL || 0;
-            document.getElementById('adminVE').value = tasas.VE_BR_BRL || 0;
-            document.getElementById('adminDolar').value = tasas.USD_VE_VES || 0;
-        }
-    } catch (e) {
-        console.log("Error cargando datos en admin");
-    }
+function cargarInputs() {
+    let valoresPorDefecto = { BR_VE_BRL: 157.00, VE_BR_BRL: 190.00, USD_VE_VES: 742.23 };
+    let datosRutas = JSON.parse(localStorage.getItem('tasasRivera')) || valoresPorDefecto;
+
+    document.getElementById('tasaBR').value = datosRutas.BR_VE_BRL;
+    document.getElementById('tasaVE').value = datosRutas.VE_BR_BRL;
+    document.getElementById('tasaDolar').value = datosRutas.USD_VE_VES;
 }
 
-async function guardarTasasNube() {
-    const br = parseFloat(document.getElementById('adminBR').value) || 0;
-    const ve = parseFloat(document.getElementById('adminVE').value) || 0;
-    const dolar = parseFloat(document.getElementById('adminDolar').value) || 0;
-
-    const objetoFinal = {
-        "BR_VE_BRL": br,
-        "VE_BR_BRL": ve,
-        "USD_VE_VES": dolar
+function guardarTasas() {
+    let nuevasTasas = {
+        BR_VE_BRL: parseFloat(document.getElementById('tasaBR').value) || 0,
+        VE_BR_BRL: parseFloat(document.getElementById('tasaVE').value) || 0,
+        USD_VE_VES: parseFloat(document.getElementById('tasaDolar').value) || 0
     };
 
-    try {
-        const respuesta = await fetch(`https://api.npoint.io/${NPOINT_ID}`, {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(objetoFinal)
-        });
-
-        if (respuesta.ok) {
-            const msg = document.getElementById('msgOk');
-            msg.style.display = 'block';
-            setTimeout(() => { msg.style.display = 'none'; }, 4000);
-        } else {
-            alert("Error al guardar en la nube.");
-        }
-    } catch (error) {
-        alert("Error de red al intentar conectar.");
-    }
+    // Guarda localmente sin requerir red ni servidores externos
+    localStorage.setItem('tasasRivera', JSON.stringify(nuevasTasas));
+    alert("¡Tasas actualizadas con éxito!");
 }
 </script>
-
 </body>
 </html>
