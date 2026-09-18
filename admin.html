@@ -36,11 +36,13 @@
     <label>Precio Dólar (1 USD en VES):</label>
     <input type="number" step="0.01" id="tasaDolar">
 
-    <button onclick="guardarTasas()">Guardar Cambios</button>
+    <button onclick="guardarEnNube()">Guardar Cambios</button>
 </div>
 
 <script>
 const CLAVE_SECRETA = "6453*";
+const BIN_ID = "6aadb26affd5d1605317805c";
+const MASTER_KEY = "$2a$10$lfzlJ20uDHSrSx2a7P7n5ecXs1iAPQASd/Q4waPVWoECgrBINDCr";
 
 function verificarClave() {
     const input = document.getElementById('claveInput').value;
@@ -53,29 +55,47 @@ function verificarClave() {
     }
 }
 
-function cargarTasasActuales() {
-    let guardadas = localStorage.getItem('tasas_rivera');
-    if (guardadas) {
-        let t = JSON.parse(guardadas);
-        document.getElementById('tasaBR').value = t.BR_VE_BRL || 0;
-        document.getElementById('tasaVE').value = t.VE_BR_BRL || 0;
-        document.getElementById('tasaDolar').value = t.USD_VE_VES || 0;
-    } else {
-        document.getElementById('tasaBR').value = 10;
-        document.getElementById('tasaVE').value = 10;
-        document.getElementById('tasaDolar').value = 36;
+async function cargarTasasActuales() {
+    try {
+        let respuesta = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+            headers: { 'X-Master-Key': MASTER_KEY }
+        });
+        let json = await respuesta.json();
+        let t = json.record;
+
+        document.getElementById('tasaBR').value = t.BR_VE_BRL;
+        document.getElementById('tasaVE').value = t.VE_BR_BRL;
+        document.getElementById('tasaDolar').value = t.USD_VE_VES;
+    } catch (e) {
+        alert("Error al cargar las tasas de la nube.");
     }
 }
 
-function guardarTasas() {
+async function guardarEnNube() {
     let nuevasTasas = {
         BR_VE_BRL: parseFloat(document.getElementById('tasaBR').value) || 0,
         VE_BR_BRL: parseFloat(document.getElementById('tasaVE').value) || 0,
         USD_VE_VES: parseFloat(document.getElementById('tasaDolar').value) || 0
     };
 
-    localStorage.setItem('tasas_rivera', JSON.stringify(nuevasTasas));
-    alert("¡Tasas guardadas exitosamente!");
+    try {
+        let respuesta = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Master-Key': MASTER_KEY
+            },
+            body: JSON.stringify(nuevasTasas)
+        });
+
+        if (respuesta.ok) {
+            alert("¡Tasas actualizadas y guardadas en la nube de por vida!");
+        } else {
+            alert("Error al guardar en la nube.");
+        }
+    } catch (e) {
+        alert("Error de red al intentar guardar.");
+    }
 }
 </script>
 </body>
