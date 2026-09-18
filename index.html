@@ -61,21 +61,19 @@
 </div>
 
 <script>
-const BIN_ID = "6aadb26affd5d1605317805c";
-let datosRutas = { BR_VE_BRL: 0, VE_BR_BRL: 0, USD_VE_VES: 0 };
+let datosRutas = { BR_VE_BRL: 157, VE_BR_BRL: 190, USD_VE_VES: 742.23 };
 
-async function cargarTasas() {
-    try {
-        let respuesta = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`);
-        let json = await respuesta.json();
-        datosRutas = json.record;
-        
-        document.getElementById('badgeBR').innerHTML = `Tasa: 1 BRL = <strong>${datosRutas.BR_VE_BRL.toFixed(2)} VES</strong>`;
-        document.getElementById('badgeVE').innerHTML = `Tasa: <strong>${datosRutas.VE_BR_BRL.toFixed(2)} VES</strong> = 1 BRL`;
-        document.getElementById('displayDolar').innerText = `1 USD = ${formato(datosRutas.USD_VE_VES)} VES`;
-    } catch (e) {
-        console.error("Error al cargar tasas");
+function cargarTasas() {
+    let guardadas = localStorage.getItem('tasas_rivera');
+    if (guardadas) {
+        try {
+            datosRutas = JSON.parse(guardadas);
+        } catch(e) {}
     }
+    
+    document.getElementById('badgeBR').innerHTML = `Tasa: 1 BRL = <strong>${(datosRutas.BR_VE_BRL || 0).toFixed(2)} VES</strong>`;
+    document.getElementById('badgeVE').innerHTML = `Tasa: <strong>${(datosRutas.VE_BR_BRL || 0).toFixed(2)} VES</strong> = 1 BRL`;
+    document.getElementById('displayDolar').innerText = `1 USD = ${formato(datosRutas.USD_VE_VES || 0)} VES`;
 }
 
 function limpiarBloque(idInput, idBox) {
