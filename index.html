@@ -5,35 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Envios - Rivera</title>
     <style>
-        body { 
-            font-family: sans-serif; 
-            background-color: #f0f2f5; 
-            padding: 15px 8px 300px 8px; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            gap: 10px; 
-            margin: 0; 
-        }
+        body { font-family: system-ui, -apple-system, sans-serif; background-color: #f0f2f5; padding: 15px 8px 100px 8px; display: flex; flex-direction: column; align-items: center; gap: 12px; margin: 0; }
         .main-title { text-align: center; color: #1e3a8a; margin: 5px 0 2px 0; font-size: 22px; font-weight: bold; }
         .subtitle { text-align: center; color: #64748b; margin: 0 0 5px 0; font-size: 12px; }
-        .card { background: white; padding: 12px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); width: 100%; max-width: 400px; box-sizing: border-box; }
-        h2 { text-align: center; margin: 0 0 6px 0; font-size: 16px; color: #1a1a1a; }
-        
-        .tasa-badge { text-align: center; background-color: #f8fafc; padding: 10px; border-radius: 8px; font-size: 13px; color: #64748b; border: 2px solid #cbd5e1; margin-bottom: 10px; }
-        .tasa-numero { font-size: 24px; font-weight: bold; color: #1e3a8a; display: block; margin-top: 2px; }
-        
+        .card { background: white; padding: 14px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); width: 100%; max-width: 400px; box-sizing: border-box; }
+        h2 { text-align: center; margin: 0 0 8px 0; font-size: 16px; color: #1a1a1a; }
+        .tasa-badge { text-align: center; background-color: #f1f5f9; padding: 6px; border-radius: 6px; font-size: 12px; color: #334155; font-weight: bold; border: 1px solid #e2e8f0; margin-bottom: 8px; }
+        .tasa-badge strong { color: #1e3a8a; }
         label { display: block; margin-bottom: 4px; font-weight: bold; color: #475569; font-size: 12px; }
-        .input-box { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-size: 18px; font-weight: bold; text-align: right; color: #1e3a8a; }
-        
-        .results-box { display: none; background-color: #f8fafc; border-left: 4px solid #1e3a8a; padding: 8px 10px; border-radius: 4px; margin-top: 8px; }
-        .result-line { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 13px; color: #334155; }
-        .highlight-line { background-color: #f0fdf4; padding: 4px 6px; border-radius: 4px; font-weight: bold; color: #16a34a; }
-        .total-line { font-weight: bold; font-size: 15px; color: #1e3a8a; padding-top: 2px; }
-        
-        .btn-clear { background-color: #ef4444; color: white; border: none; border-radius: 4px; padding: 6px; width: 100%; font-size: 11px; font-weight: bold; margin-top: 8px; cursor: pointer; }
-        .btn-clear:active { background-color: #dc2626; }
-
+        .input-box { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-size: 20px; font-weight: bold; text-align: right; color: #1e3a8a; background: #fff; }
+        .results-box { display: none; background-color: #f8fafc; border-left: 4px solid #1e3a8a; padding: 10px; border-radius: 4px; margin-top: 10px; }
+        .result-line { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 14px; color: #334155; }
+        .highlight-line { background-color: #f0fdf4; padding: 6px; border-radius: 4px; font-weight: bold; color: #16a34a; }
+        .total-line { font-weight: bold; font-size: 16px; color: #1e3a8a; padding-top: 2px; }
+        .btn-clear { background-color: #ef4444; color: white; border: none; border-radius: 6px; padding: 8px; width: 100%; font-size: 12px; font-weight: bold; margin-top: 8px; cursor: pointer; }
         .dolar-card { text-align: center; background: #ffffff; border: 2px solid #2563eb; }
         .dolar-precio { font-size: 26px; font-weight: bold; color: #1e3a8a; margin: 5px 0; }
     </style>
@@ -45,13 +30,11 @@
     <p class="subtitle">Calculadora Rápida para Clientes</p>
 </div>
 
-<!-- BLOQUE 1: BRASIL A VENEZUELA -->
 <div class="card">
     <h2>🇧🇷 ➔ 🇻🇪 Brasil a Venezuela</h2>
     <div class="tasa-badge" id="badgeBR">Cargando tasa...</div>
     <label>Tú envías (Reales - BRL):</label>
-    <input type="text" id="amountBR" class="input-box" placeholder="0,00" inputmode="numeric" onfocus="verCompleto(this)" oninput="aplicarMascaraBancaria(this); calcularBR()">
-    
+    <input type="text" id="amountBR" class="input-box" placeholder="0,00" inputmode="numeric" oninput="aplicarMascaraBancaria(this); calcularBR()">
     <div class="results-box" id="boxBR">
         <div class="result-line total-line"><span>Recibe:</span> <span id="resTotalBR">0,00 VES</span></div>
         <div class="result-line highlight-line"><span>En Dólares:</span> <span id="resUsdBR">0,00 USD</span></div>
@@ -59,13 +42,11 @@
     </div>
 </div>
 
-<!-- BLOQUE 2: VENEZUELA A BRASIL -->
 <div class="card">
     <h2>🇻🇪 ➔ 🇧🇷 Venezuela a Brasil</h2>
     <div class="tasa-badge" id="badgeVE">Cargando tasa...</div>
     <label>Tú envías (Bolívares - VES):</label>
-    <input type="text" id="amountVE" class="input-box" placeholder="0,00" inputmode="numeric" onfocus="verCompleto(this)" oninput="aplicarMascaraBancaria(this); calcularVE()">
-    
+    <input type="text" id="amountVE" class="input-box" placeholder="0,00" inputmode="numeric" oninput="aplicarMascaraBancaria(this); calcularVE()">
     <div class="results-box" id="boxVE">
         <div class="result-line total-line"><span>Recibe:</span> <span id="resTotalBRL">0,00 BRL</span></div>
         <div class="result-line highlight-line"><span>Equivalente en Dólares:</span> <span id="resUsdVE">0,00 USD</span></div>
@@ -73,37 +54,36 @@
     </div>
 </div>
 
-<!-- BLOQUE 3: PRECIO DEL DÓLAR -->
 <div class="card dolar-card">
     <h2>🇺🇸 Precio del Dólar</h2>
     <p style="margin: 0; font-size: 11px; color: #64748b;">Tasa de referencia oficial</p>
-    <div class="dolar-precio" id="displayDolar">0,00 VES</div>
+    <div class="dolar-precio" id="displayDolar">Cargando...</div>
 </div>
 
 <script>
-const NPOINT_ID = "0ea603d34d229220c52f";
 let datosRutas = { BR_VE_BRL: 0, VE_BR_BRL: 0, USD_VE_VES: 0 };
+
+async function cargarTasas() {
+    try {
+        let respuesta = await fetch('tasas.json?v=' + new Date().getTime());
+        datosRutas = await respuesta.json();
+        
+        document.getElementById('badgeBR').innerHTML = `Tasa: 1 BRL = <strong>${datosRutas.BR_VE_BRL.toFixed(2)} VES</strong>`;
+        document.getElementById('badgeVE').innerHTML = `Tasa: <strong>${datosRutas.VE_BR_BRL.toFixed(2)} VES</strong> = 1 BRL`;
+        document.getElementById('displayDolar').innerText = `1 USD = ${formato(datosRutas.USD_VE_VES)} VES`;
+    } catch (e) {
+        console.error("Error al cargar tasas");
+    }
+}
 
 function limpiarBloque(idInput, idBox) {
     document.getElementById(idInput).value = "";
     document.getElementById(idBox).style.display = "none";
 }
 
-function verCompleto(input) {
-    setTimeout(() => {
-        const tarjeta = input.closest('.card');
-        if (tarjeta) {
-            tarjeta.scrollIntoView({ behavior: 'smooth', block: 'end' });
-        }
-    }, 350);
-}
-
 function aplicarMascaraBancaria(input) {
     let valor = input.value.replace(/\D/g, "");
-    if (valor === "") {
-        input.value = "";
-        return;
-    }
+    if (valor === "") { input.value = ""; return; }
     let numero = (parseInt(valor, 10) / 100).toFixed(2);
     let partes = numero.split(".");
     partes[0] = partes[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -113,9 +93,7 @@ function aplicarMascaraBancaria(input) {
 function obtenerNumeroValido(id) {
     let valor = document.getElementById(id).value;
     if (!valor) return 0;
-    valor = valor.replace(/\./g, '').replace(/,/g, '.');
-    const num = parseFloat(valor);
-    return isNaN(num) ? 0 : num;
+    return parseFloat(valor.replace(/\./g, '').replace(/,/g, '.')) || 0;
 }
 
 function formato(n) {
@@ -131,7 +109,6 @@ function calcularBR() {
     const totalUsd = datosRutas.USD_VE_VES > 0 ? totalVes / datosRutas.USD_VE_VES : 0;
     document.getElementById('resTotalBR').innerText = formato(totalVes) + " VES";
     document.getElementById('resUsdBR').innerText = formato(totalUsd) + " USD";
-    verCompleto(document.getElementById('amountBR'));
 }
 
 function calcularVE() {
@@ -143,38 +120,9 @@ function calcularVE() {
     const totalUsd = datosRutas.USD_VE_VES > 0 ? amount / datosRutas.USD_VE_VES : 0;
     document.getElementById('resTotalBRL').innerText = formato(totalBrl) + " BRL";
     document.getElementById('resUsdVE').innerText = formato(totalUsd) + " USD";
-    verCompleto(document.getElementById('amountVE'));
-}
-
-async function cargarTasas() {
-    try {
-        const respuesta = await fetch(`https://api.npoint.io/${NPOINT_ID}?t=` + new Date().getTime());
-        if (respuesta.ok) {
-            datosRutas = await respuesta.json();
-        }
-    } catch (error) {
-        console.log("Error cargando tasas");
-    }
-
-    document.getElementById('badgeBR').innerHTML = `Tasa <span class="tasa-numero">${Math.trunc(datosRutas.BR_VE_BRL || 0)}</span>`;
-    document.getElementById('badgeVE').innerHTML = `Tasa <span class="tasa-numero">${Math.trunc(datosRutas.VE_BR_BRL || 0)}</span>`;
-    document.getElementById('displayDolar').innerText = `1 USD = ${formato(datosRutas.USD_VE_VES || 0)} VES`;
 }
 
 window.onload = cargarTasas;
 </script>
-    <!-- Default Statcounter code for Calculadora https://tinyurl.com/Clientesr -->
-    <script type="text/javascript">
-var sc_project=13353797; 
-var sc_invisible=1; 
-var sc_security="045f5dac"; 
-</script>
-<script type="text/javascript"
-src="https://www.statcounter.com/counter/counter.js" async></script>
-<noscript><div class="statcounter"><a title="Web Analytics"
-href="https://statcounter.com/" target="_blank"><img class="statcounter"
-src="https://c.statcounter.com/13353797/0/045f5dac/1/" alt="Web Analytics"
-referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
-<!-- End of Statcounter Code -->
 </body>
 </html>
