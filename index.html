@@ -61,22 +61,20 @@
 </div>
 
 <script>
+const BIN_ID = "6aadb26affd5d1605317805c";
 let datosRutas = { BR_VE_BRL: 0, VE_BR_BRL: 0, USD_VE_VES: 0 };
 
 async function cargarTasas() {
     try {
-        let respuesta = await fetch('tasas.json?v=' + new Date().getTime());
-        datosRutas = await respuesta.json();
+        let respuesta = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`);
+        let json = await respuesta.json();
+        datosRutas = json.record;
         
         document.getElementById('badgeBR').innerHTML = `Tasa: 1 BRL = <strong>${datosRutas.BR_VE_BRL.toFixed(2)} VES</strong>`;
         document.getElementById('badgeVE').innerHTML = `Tasa: <strong>${datosRutas.VE_BR_BRL.toFixed(2)} VES</strong> = 1 BRL`;
         document.getElementById('displayDolar').innerText = `1 USD = ${formato(datosRutas.USD_VE_VES)} VES`;
     } catch (e) {
-        // Valores por defecto si falla la lectura inicial
-        datosRutas = { BR_VE_BRL: 10, VE_BR_BRL: 10, USD_VE_VES: 36 };
-        document.getElementById('badgeBR').innerHTML = `Tasa: 1 BRL = <strong>10.00 VES</strong>`;
-        document.getElementById('badgeVE').innerHTML = `Tasa: <strong>10.00 VES</strong> = 1 BRL`;
-        document.getElementById('displayDolar').innerText = `1 USD = 36.00 VES`;
+        console.error("Error al cargar tasas");
     }
 }
 
